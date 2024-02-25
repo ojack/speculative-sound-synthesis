@@ -1,3 +1,59 @@
+#### my little drawing app
+
+## notes
+#### setting up linter
+https://www.digitalocean.com/community/tutorials/linting-and-formatting-with-eslint-in-vs-code
+
+using this to learn solid js :]
+
+### to add
+- color picker on right
+- eraser tool
+- ?? hydra code editor
+- draggable handles
+
+### to research / try
+- solid element
+- making components without jsx
+- converting draggable code from vite & draggable library
+  
+### project t0 do
+- configure standard js
+
+## ways of passing reactive props
+- can only listen to effects on signals or stores (which use signals internally)
+- how does this work for web components, ideally hydra-canvas-element could work like :
+```html
+<hydra-canvas width="300"></hydra-canvas>
+```
+where updating the width would automatically change the internal resolution via `setResolution`.
+
+### listening to prop changes with createWritableMemo()
+
+in order to use static props instead of signals, can use writable memo
+  
+```javascript
+import { createWritableMemo } from '@solid-primitives/memo'
+
+  const [testValue, setMyTestValue] = createWritableMemo(() => props.testStaticProp)
+
+  createEffect(() => {
+    console.log('my static prop has changed', testValue())
+  })
+```
+  /* to do:
+   - pass code as props
+   - pass dimensions as props
+   - pass sources as props
+   - fps as props
+   */
+
+
+
+
+
+
+
 ## Usage
 
 Those templates dependencies are maintained via [pnpm](https://pnpm.io) via `pnpm up -Lri`.

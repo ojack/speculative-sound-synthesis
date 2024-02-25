@@ -11,6 +11,9 @@ export default defineConfig({
     // devtools(),
     solidPlugin()
   ],
+  define: {
+    global: {}
+  },
   server: {
     port: 3000
   },
