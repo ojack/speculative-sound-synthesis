@@ -1,0 +1,72 @@
+.kid-pix {
+    background-image: url(./kidpix-sprites.png);
+    background-size: 200% 1200%;
+    background-repeat: no-repeat;
+    width: 45px;
+    height: 45px;
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  /* .kid-pix--pencil {
+    background-position: 50% 0;
+  } */
+
+  .kid-pix--pencil {
+    background-position: 100% 0;
+  }
+
+  .kid-pix--pencil .solid {
+    background-position: 0 0;
+  }
+
+  .kid-pix--line {
+    background-position: 100% 9.09%;
+  }
+
+  .kid-pix--rect {
+    background-position: 100% calc(2*9.09%);
+  }
+
+  .kid-pix--circle {
+    background-position: 100% calc(3*9.09%);
+  }
+
+  .kid-pix--large-pencil {
+    background-position: 100% calc(4*9.09%);
+  }
+
+  .kid-pix--spray{
+    background-position: 100% calc(5*9.09%);
+  }
+
+  .kid-pix--fill {
+    background-position: 100% calc(6*9.09%);
+  }
+
+  .kid-pix--eraser {
+    background-position: 100% calc(7*9.09%);
+  }
+
+  .kid-pix--letter {
+    background-position: 100% calc(8*9.09%);
+  }
+
+  .kid-pix--stamp {
+    background-position: 100% calc(9*9.09%);
+  }
+
+  /* .kid-pix--move {
+    background-position: 100% calc(9*9.09%);
+  } */
+
+  .kid-pix--move {
+    background-position: 100% calc(10*9.09%);
+  }
+
+  .kid-pix--undo {
+    background-position: 100% 100%;
+  }
+
+
+ 
