@@ -1,39 +1,24 @@
-import HydraCanvas from './components/HydraCanvas.jsx'
-import DrawingCanvas from './components/DrawingCanvas.jsx'
-import { createDrawingStore } from './store.js'
-import Toolbar from './components/Toolbar.jsx'
-import HydraEditor from './components/HydraEditor.jsx'
+import FaustEditor from './FaustEditor.jsx'
+import DrawingCanvas from './DrawingCanvas.jsx'
+import { createStore } from 'solid-js/store'
 
 function App () {
-  const { drawingState, setDrawingState, hydraState, setHydraState } = createDrawingStore()
-
-  // set drawing canvas as input to hydra
-  const updateHydraSource = (canvas) => {
-    console.log('loaded canvas!', canvas)
-    setHydraState('s0', canvas)
-  }
+  const [store, setStore] = createStore({
+    paramCount: 3,
+    params: [
+      { val: 100, min: 0, max: 1000 },
+      { val: 100, min: 0, max: 1000 },
+      { val: 0, min: 0, max: 1 }
+    ]
+  })
 
   return (
-    <div style={{ 'background-color': drawingState.backgroundColor }}>
-      <div class="flex" >
-      <div class="border-2 border-white" >
-          <div class="">
-            <HydraCanvas {...hydraState} setHydraState={setHydraState} />
-          </div>
-          {/* <DrawingCanvas width={drawingState.width} height={drawingState.height} fillStyle={drawingState.fillStyle} /> */}
-          <div class="top-0 left-0 absolute"> <DrawingCanvas {...drawingState} setDrawingState={setDrawingState} onload={updateHydraSource}/></div>
+    <div class="flex w-full font-mono">
+            <DrawingCanvas params={store.params} width={600} height={600} setStore={setStore} />
+      <div class="w-full">
+      <FaustEditor params={store.params} paramCount={store.paramCount} setStore={setStore}/>
       </div>
-      <div style={{ width: `${drawingState.toolbarWidth}px` }}>
-      <HydraEditor setHydraState={setHydraState} errorMessage={hydraState.errorMessage}/>
-        <Toolbar {...drawingState} setDrawingState={setDrawingState} setHydraState={setHydraState}/>
-      </div>
-
-      </div>
-      {/* <div>
-        <h1 class="text-4xl text-green-700 text-center py-20">little solid drawing tool</h1>
-      </div> */}
-    </div>
-
+</div>
   )
 }
 

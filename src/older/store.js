@@ -26,7 +26,8 @@ export function createDrawingStore () {
     height,
     code: 'osc().out()',
     s0: null,
-    errorMessage: 'test error'
+    errorMessage: 'test error',
+    ref: null
     // fps:
   })
 

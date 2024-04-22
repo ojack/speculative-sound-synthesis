@@ -18,7 +18,7 @@ export default function HydraEditor (props) {
     const editor = new CreateHydraEditor(editorRef, emit)
   })
 
-  return <div class="w-96">
+  return <div style={{ width: '600px' }}>
     <div class="h-96" ref={editorRef} />
     <div class="text-red-500 w-full">{props.errorMessage}</div>
 </div>
