@@ -4,12 +4,13 @@ import { createStore } from 'solid-js/store'
 
 function App () {
   const [store, setStore] = createStore({
-    paramCount: 3,
-    params: [
-      { val: 100, min: 0, max: 1000 },
-      { val: 100, min: 0, max: 1000 },
-      { val: 0, min: 0, max: 1 }
-    ]
+    // paramCount: 3,
+    paramList: ['x', 'y', 'pointerdown'],
+    params: {
+      x: { val: 100, min: 0, max: 1000 },
+      y: { val: 100, min: 0, max: 1000 },
+      pointerdown: { val: 0, min: 0, max: 1 }
+    }
   })
 
   return (

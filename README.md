@@ -1,90 +1,19 @@
-#### my little drawing app
+# drawbble
 
-## notes
-#### setting up linter
-https://www.digitalocean.com/community/tutorials/linting-and-formatting-with-eslint-in-vs-code
+## available drawing parameters
+- x: x position of initial touch point
+- y: y position of initial touch point
+- pointerdown: 0 when no touch points are detected, 1 when one or more touch points
 
-using this to learn solid js :]
+## mapping audio parameters to drawing parameters
+Use existing faust syntax to map audio parameters directly to drawing ui parameters. Uses the syntax defined at https://faustdoc.grame.fr/manual/syntax/#ui-label-metadata for adding metadata to a faust UI element. Metadata parameters use the 'draw' key to indicate that they should be controlled by a specific drawing parameter, such as X postion or Y position, etc. 
 
-### to add
-- color picker on right
-- eraser tool
-- ?? hydra code editor
-- draggable handles
-
-### to research / try
-- solid element
-- making components without jsx
-- converting draggable code from vite & draggable library
+```C
+import("stdfaust.lib");
   
-### project t0 do
-- configure standard js
-
-## ways of passing reactive props
-- can only listen to effects on signals or stores (which use signals internally)
-- how does this work for web components, ideally hydra-canvas-element could work like :
-```html
-<hydra-canvas width="300"></hydra-canvas>
-```
-where updating the width would automatically change the internal resolution via `setResolution`.
-
-### listening to prop changes with createWritableMemo()
-
-in order to use static props instead of signals, can use writable memo
+vol = hslider("volume [unit:dB][draw:pointerdown]", -96, -96, 0, 0.1) : ba.db2linear : si.smoo;
+freq1 = hslider("freq1 [unit:Hz][draw:x]", 1000, 20, 3000, 1);
+freq2 = hslider("freq2 [unit:Hz][draw:y]", 200, 20, 3000, 1);
   
-```javascript
-import { createWritableMemo } from '@solid-primitives/memo'
-
-  const [testValue, setMyTestValue] = createWritableMemo(() => props.testStaticProp)
-
-  createEffect(() => {
-    console.log('my static prop has changed', testValue())
-  })
+process = vgroup("Oscillator", os.osc(freq1) * vol, os.osc(freq2) * vol);
 ```
-  /* to do:
-   - pass code as props
-   - pass dimensions as props
-   - pass sources as props
-   - fps as props
-   */
-
-
-
-
-
-
-
-## Usage
-
-Those templates dependencies are maintained via [pnpm](https://pnpm.io) via `pnpm up -Lri`.
-
-This is the reason you see a `pnpm-lock.yaml`. That being said, any package manager will work. This file can be safely be removed once you clone a template.
-
-```bash
-$ npm install # or pnpm install or yarn install
-```
-
-### Learn more on the [Solid Website](https://solidjs.com) and come chat with us on our [Discord](https://discord.com/invite/solidjs)
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm run dev` or `npm start`
-
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.<br>
-
-### `npm run build`
-
-Builds the app for production to the `dist` folder.<br>
-It correctly bundles Solid in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
-
-## Deployment
-
-You can deploy the `dist` folder to any static host provider (netlify, surge, now, etc.)

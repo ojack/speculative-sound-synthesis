@@ -4,7 +4,7 @@ import brushes from './brushes.js'
 export default function DrawingCanvas (_props) {
   let canvas
 
-  const props = mergeProps({ width: window.innerWidth, height: window.innerHeight, fillStyle: 'pink', onload: () => {}, currentBrush: 'circle' }, _props)
+  const props = mergeProps({ width: window.innerWidth, height: window.innerHeight, fillStyle: 'purple', onload: () => {}, currentBrush: 'pencil' }, _props)
 
   onMount(() => {
     props.onload(canvas)
@@ -33,28 +33,32 @@ export default function DrawingCanvas (_props) {
       // const { offsetX, offsetY } = e
       // ctx.fillRect(offsetX, offsetY, 20, 20)
       currentBrush({ x: e.offsetX, y: e.offsetY, ctx })
-      props.setStore('params', 2, 'val', 1)
-      props.setStore('params', 0, 'val', e.offsetX)
-      props.setStore('params', 1, 'val', e.offsetY)
+      props.setStore('params', 'pointerdown', 'val', 1)
+      props.setStore('params', 'x', 'val', e.offsetX)
+      props.setStore('params', 'y', 'val', e.offsetY)
     })
 
     canvas.addEventListener('pointermove', (e) => {
       if (isDrawing) {
         // currentBrush(e)
         currentBrush({ x: e.offsetX, y: e.offsetY, ctx })
-        props.setStore('params', 0, 'val', e.offsetX)
-        props.setStore('params', 1, 'val', e.offsetY)
+        // props.setStore('params', 0, 'val', e.offsetX)
+        // props.setStore('params', 1, 'val', e.offsetY)
+        props.setStore('params', 'x', 'val', e.offsetX)
+        props.setStore('params', 'y', 'val', e.offsetY)
       }
     })
 
     canvas.addEventListener('pointerup', (e) => {
       isDrawing = false
-      props.setStore('params', 2, 'val', 0)
+      // props.setStore('params', 2, 'val', 0)
+      props.setStore('params', 'pointerdown', 'val', 0)
     })
   })
 
   return <canvas
   // class="absolute"
+  class="border border-black"
             ref={canvas}
             width={props.width}
             height={props.height}

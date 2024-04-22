@@ -5,9 +5,9 @@ import { onMount, createEffect, For } from 'solid-js'
 const faustCode = `
   import("stdfaust.lib");
   
-  vol = hslider("volume [unit:dB]", -96, -96, 0, 0.1) : ba.db2linear : si.smoo;
-  freq1 = hslider("freq1 [unit:Hz]", 1000, 20, 3000, 1);
-  freq2 = hslider("freq2 [unit:Hz]", 200, 20, 3000, 1);
+  vol = hslider("volume [unit:dB][draw:pointerdown]", -96, -96, 0, 0.1) : ba.db2linear : si.smoo;
+  freq1 = hslider("freq1 [unit:Hz][draw:x]", 1000, 20, 3000, 1);
+  freq2 = hslider("freq2 [unit:Hz][draw:y]", 200, 20, 3000, 1);
   
   process = vgroup("Oscillator", os.osc(freq1) * vol, os.osc(freq2) * vol);
   `
@@ -62,15 +62,19 @@ function Faust (props) {
   createEffect(() => {
     console.log('faust sliders are', faustParams.sliders)
     faustParams.sliders.forEach((slider, i) => {
-      if (i < props.paramCount) {
-        const { address, max, min } = slider
+      // if (i < props.paramCount) {
+      if (slider.draw !== null) {
+        const { address, max, min, draw } = slider
 
         // @todo: how to change params when first loaded?
         createEffect(() => {
           // @todo: ???use create memo to calculate values
           // console.log(address, props.params[i].val)
-          console.log('slider effect', faustParams.sliders)
-          const val = props.params[i].val / (props.params[i].max - props.params[i].min) - props.params[i].min
+          console.log('slider effect', faustParams.sliders, draw, props.params)
+          const param = props.params[draw]
+          console.log('param is', param)
+          const val = param.val / (param.max - param.min) - param.min
+          // const val = props.params[draw].val / (props.params[draw].max - props.params[draw].min) - props.params[draw].min
           const newVal = min + val * (max - min)
           console.log(address, newVal)
           faustEl.node?.setParamValue(address, newVal)
@@ -89,6 +93,13 @@ function Faust (props) {
       if (ui.length > 0) {
         const group = ui[0].items
         const sliders = group.filter(item => item.type === 'hslider' || item.type === 'vslider')
+        sliders.forEach((slider) => {
+          const mapping = slider.meta.filter(m => 'draw' in m)
+          slider.draw = mapping.length > 0 ? mapping[0].draw : null // @todo: what to do for default parameters
+
+          // console.log('meta', slider.meta, mapping, slider.draw)
+          // if (slider.)
+        })
         setFaustParams('sliders', sliders)
       }
     })
@@ -97,7 +108,7 @@ function Faust (props) {
         <div>
           <div class="flex">
             <For each={faustParams.sliders}>{(param, i) =>
-              <div class="p-1">{param.label}</div>
+              <div class="p-1 border border-black">{param.label}:{param.draw} </div>
             }</For>
           </div>
         <faust-editor ref={faustEl}>

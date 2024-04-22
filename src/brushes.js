@@ -1,4 +1,4 @@
-function rect ({ x, y, ctx, w = 60, h = 50, showStroke = false, showFill = true }) {
+function rect ({ x, y, ctx, w = 10, h = 10, showStroke = false, showFill = true }) {
   if (showFill) ctx.fillRect(x - w / 2, y - h / 2, w, h)
   if (showStroke) ctx.strokeRect(x - w / 2, y - h / 2, w, h)
 }
