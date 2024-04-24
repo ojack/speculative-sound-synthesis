@@ -14,6 +14,7 @@ export default defineConfig({
   define: {
     global: {}
   },
+  base: '/speculative-sound-synthesis/',
   server: {
     port: 3000
   },
