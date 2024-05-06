@@ -1,36 +1,22 @@
 /**
-* WIP modification of mouse contraint to provide multitouch interaction support
-* The `Matter.Constraint` module contains methods for creating mouse constraints.
+* The `Matter.MouseConstraint` module contains methods for creating mouse constraints.
 * Mouse constraints are used for allowing user interaction, providing the ability to move bodies via the mouse or touch.
 *
 * See the included usage [examples](https://github.com/liabru/matter-js/tree/master/examples).
 *
 * @class MouseConstraint
 */
-
 import { Vertices, Sleeping, Mouse, Events, Detector, Constraint, Common, Bounds, Composite } from 'matter-js'
 
-// const TouchConstraint = {}
-
-// var Vertices = require('../geometry/Vertices');
-// var Sleeping = require('../core/Sleeping');
-// var Mouse = require('../core/Mouse');
-// var Events = require('../core/Events');
-// var Detector = require('../collision/Detector');
-// var Constraint = require('./Constraint');
-// var Composite = require('../body/Composite');
-// var Common = require('../core/Common');
-// var Bounds = require('../geometry/Bounds');
-
-export default function TouchConstraint () {
-/**
+export default function MouseConstraint () {
+  /**
      * Creates a new mouse constraint.
      * All properties have default values, and many are pre-calculated automatically based on other properties.
      * See the properties section below for detailed information on what you can pass via the `options` object.
      * @method create
      * @param {engine} engine
      * @param {} options
-     * @return {touchConstraint} A new touchConstraint
+     * @return {MouseConstraint} A new MouseConstraint
      */
   const create = function (engine, options) {
     let mouse = (engine ? engine.mouse : null) || (options ? options.mouse : null)
@@ -42,12 +28,12 @@ export default function TouchConstraint () {
         mouse = Mouse.create(options.element)
       } else {
         mouse = Mouse.create()
-        Common.warn('touchConstraint.create: options.mouse was undefined, options.element was undefined, may not function as expected')
+        Common.warn('MouseConstraint.create: options.mouse was undefined, options.element was undefined, may not function as expected')
       }
     }
 
     const constraint = Constraint.create({
-      label: 'Touse Constraint',
+      label: 'Mouse Constraint',
       pointA: mouse.position,
       pointB: { x: 0, y: 0 },
       length: 0.01,
@@ -60,7 +46,7 @@ export default function TouchConstraint () {
     })
 
     const defaults = {
-      type: 'touchConstraint',
+      type: 'mouseConstraint',
       mouse,
       element: null,
       body: null,
@@ -72,45 +58,45 @@ export default function TouchConstraint () {
       }
     }
 
-    const touchConstraint = Common.extend(defaults, options)
+    const mouseConstraint = Common.extend(defaults, options)
 
     Events.on(engine, 'beforeUpdate', function () {
       const allBodies = Composite.allBodies(engine.world)
-      touchConstraint.update(touchConstraint, allBodies)
-      touchConstraint._triggerEvents(touchConstraint)
+      update(mouseConstraint, allBodies)
+      _triggerEvents(mouseConstraint)
     })
 
-    return touchConstraint
+    return mouseConstraint
   }
 
   /**
      * Updates the given mouse constraint.
      * @private
      * @method update
-     * @param {touchConstraint} touchConstraint
+     * @param {MouseConstraint} mouseConstraint
      * @param {body[]} bodies
      */
-  const update = function (touchConstraint, bodies) {
-    const mouse = touchConstraint.mouse
-    const constraint = touchConstraint.constraint
-    let body = touchConstraint.body
+  const update = function (mouseConstraint, bodies) {
+    const mouse = mouseConstraint.mouse
+    const constraint = mouseConstraint.constraint
+    let body = mouseConstraint.body
 
     if (mouse.button === 0) {
       if (!constraint.bodyB) {
         for (let i = 0; i < bodies.length; i++) {
           body = bodies[i]
           if (Bounds.contains(body.bounds, mouse.position) &&
-                            Detector.canCollide(body.collisionFilter, touchConstraint.collisionFilter)) {
+                            Detector.canCollide(body.collisionFilter, mouseConstraint.collisionFilter)) {
             for (let j = body.parts.length > 1 ? 1 : 0; j < body.parts.length; j++) {
               const part = body.parts[j]
               if (Vertices.contains(part.vertices, mouse.position)) {
                 constraint.pointA = mouse.position
-                constraint.bodyB = touchConstraint.body = body
+                constraint.bodyB = mouseConstraint.body = body
                 constraint.pointB = { x: mouse.position.x - body.position.x, y: mouse.position.y - body.position.y }
                 constraint.angleB = body.angle
 
                 Sleeping.set(body, false)
-                Events.trigger(touchConstraint, 'startdrag', { mouse, body })
+                Events.trigger(mouseConstraint, 'startdrag', { mouse, body })
 
                 break
               }
@@ -122,10 +108,10 @@ export default function TouchConstraint () {
         constraint.pointA = mouse.position
       }
     } else {
-      constraint.bodyB = touchConstraint.body = null
+      constraint.bodyB = mouseConstraint.body = null
       constraint.pointB = null
 
-      if (body) { Events.trigger(touchConstraint, 'enddrag', { mouse, body }) }
+      if (body) { Events.trigger(mouseConstraint, 'enddrag', { mouse, body }) }
     }
   }
 
@@ -133,17 +119,17 @@ export default function TouchConstraint () {
      * Triggers mouse constraint events.
      * @method _triggerEvents
      * @private
-     * @param {mouse} touchConstraint
+     * @param {mouse} mouseConstraint
      */
-  const _triggerEvents = function (touchConstraint) {
-    const mouse = touchConstraint.mouse
+  const _triggerEvents = function (mouseConstraint) {
+    const mouse = mouseConstraint.mouse
     const mouseEvents = mouse.sourceEvents
 
-    if (mouseEvents.mousemove) { Events.trigger(touchConstraint, 'mousemove', { mouse }) }
+    if (mouseEvents.mousemove) { Events.trigger(mouseConstraint, 'mousemove', { mouse }) }
 
-    if (mouseEvents.mousedown) { Events.trigger(touchConstraint, 'mousedown', { mouse }) }
+    if (mouseEvents.mousedown) { Events.trigger(mouseConstraint, 'mousedown', { mouse }) }
 
-    if (mouseEvents.mouseup) { Events.trigger(touchConstraint, 'mouseup', { mouse }) }
+    if (mouseEvents.mouseup) { Events.trigger(mouseConstraint, 'mouseup', { mouse }) }
 
     // reset the mouse state ready for the next step
     Mouse.clearSourceEvents(mouse)
@@ -253,6 +239,6 @@ export default function TouchConstraint () {
      * @property collisionFilter
      * @type object
      */
-  // export default TouchConstraint
+
   return { create, update, _triggerEvents }
 }

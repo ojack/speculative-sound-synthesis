@@ -1,14 +1,15 @@
 import { onMount, mergeProps, createEffect } from 'solid-js'
-import { Engine, Render, Runner, Events, Body, Bodies, MouseConstraint, Composite } from 'matter-js'
+import { Engine, Render, Runner, Events, Body, Bodies, Composite } from 'matter-js'
 import _Mouse from './physics/Mouse.js'
-// import TouchConstraint from './physics/.js'
+import _MouseConstraint from './physics/MouseConstraint.js'
 
 // import HydraCanvas from './HydraCanvas.jsx'
 export default function DrawingCanvas (props) {
   let parent
   const Mouse = _Mouse()
+  const MouseConstraint = _MouseConstraint()
 
-  console.log('MOUSE IS', Mouse, Mouse.create)
+  console.log('MOUSE IS', MouseConstraint, MouseConstraint.create)
   onMount(() => {
     // module aliases
     // const Engine = Matter.Engine
@@ -105,6 +106,8 @@ export default function DrawingCanvas (props) {
         }
       }
     })
+
+    // Events.on(mouse, 'startdrag', (e) => { console.log('drag started', e) })
 
     Composite.add(engine.world, mouseConstraint)
     // run the renderer
