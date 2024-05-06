@@ -43,7 +43,7 @@ echo = +~(de.delay(65536,del*ma.SR)*fb);
 // putting it together
 process = os.lf_imptrain(impFreq) : fi.resonlp(resFreq,q,1) : echo : ef.cubicnl(y1,0)*0.95 <: _,_;`
 
-console.log('toy is ', faustToy)
+// console.log('toy is ', faustToy)
 
 function Faust (props) {
   let faustEl
@@ -80,6 +80,8 @@ function Faust (props) {
   //   })
   // })
 
+  const map = (current, inMin, inMax, outMin, outMax) => ((current - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin
+
   createEffect(() => {
     console.log('faust sliders are', faustParams.sliders)
     faustParams.sliders.forEach((slider, i) => {
@@ -91,13 +93,14 @@ function Faust (props) {
         createEffect(() => {
           // @todo: ???use create memo to calculate values
           // console.log(address, props.params[i].val)
-          console.log('slider effect', faustParams.sliders, draw, props.params)
+          // console.log('slider effect', faustParams.sliders, draw, props.params)
           const param = props.params[draw]
-          console.log('param is', param)
-          const val = param.val / (param.max - param.min) - param.min
+          // console.log('param is', param)
+          // const val = param.val / (param.max - param.min) - param.min
           // const val = props.params[draw].val / (props.params[draw].max - props.params[draw].min) - props.params[draw].min
-          const newVal = min + val * (max - min)
-          console.log(address, newVal)
+          // const newVal = min + val * (max - min)
+          const newVal = map(param.val, param.min, param.max, min, max)
+          // console.log(address, newVal)
           faustEl.node?.setParamValue(address, newVal)
         })
       }
@@ -105,7 +108,7 @@ function Faust (props) {
   })
 
   onMount(() => {
-    console.log('loaded faustEl', faustEl)
+    // console.log('loaded faustEl', faustEl)
     // createEffect(() => {
     //   console.log(props.params[0].val)
     // })
@@ -127,7 +130,7 @@ function Faust (props) {
 
         const nestedSliders = getNested(ui)
         const sliders = nestedSliders.flat(Infinity)
-        console.log('sliders are', nestedSliders, sliders)
+        // console.log('sliders are', nestedSliders, sliders)
         // const sliders = group.filter(item => item.type === 'hslider' || item.type === 'vslider')
         sliders.forEach((slider) => {
           slider.draw = null
@@ -152,7 +155,7 @@ function Faust (props) {
             }</For>
           </div>
         <faust-editor ref={faustEl}>
-      {faustToy}
+      {props.dsp}
         </faust-editor>
         </div>
 

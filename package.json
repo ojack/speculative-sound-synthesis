@@ -24,6 +24,7 @@
     "vite-plugin-solid": "^2.8.2"
   },
   "dependencies": {
+    "matter-js": "^0.19.0",
     "solid-icons": "^1.1.0",
     "solid-js": "^1.8.11"
   }
