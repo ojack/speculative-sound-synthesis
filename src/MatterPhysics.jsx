@@ -107,7 +107,22 @@ export default function DrawingCanvas (props) {
       }
     })
 
-    // Events.on(mouse, 'startdrag', (e) => { console.log('drag started', e) })
+    Events.on(mouseConstraint, 'startdrag', (e) => { console.log('drag started', e) })
+
+    Events.on(mouseConstraint, 'mousedown', (e) => {
+      // console.log('mousedown', mouseConstraint, mouseConstraint.constraint.bodyB)
+      // If not grabbing an existing object, add a new object
+      if (mouseConstraint.constraint.bodyB === null) {
+        // console.log('adding', mouse)
+        const shape = Bodies.rectangle(mouse.absolute.x, mouse.absolute.y, 50, 50, {
+          render: { visible: true, fillStyle: '#f36' }
+        })
+
+        //   Bodies.re
+        //   shape.render = fillStyle = '#f00'
+        Composite.add(engine.world, shape)
+      }
+    })
 
     Composite.add(engine.world, mouseConstraint)
     // run the renderer
