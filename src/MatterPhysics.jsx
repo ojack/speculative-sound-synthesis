@@ -1,9 +1,14 @@
 import { onMount, mergeProps, createEffect } from 'solid-js'
-import { Engine, Render, Runner, Events, Body, Bodies, Mouse, MouseConstraint, Composite } from 'matter-js'
+import { Engine, Render, Runner, Events, Body, Bodies, MouseConstraint, Composite } from 'matter-js'
+import _Mouse from './physics/Mouse.js'
+// import TouchConstraint from './physics/.js'
+
 // import HydraCanvas from './HydraCanvas.jsx'
 export default function DrawingCanvas (props) {
   let parent
+  const Mouse = _Mouse()
 
+  console.log('MOUSE IS', Mouse, Mouse.create)
   onMount(() => {
     // module aliases
     // const Engine = Matter.Engine
@@ -22,7 +27,7 @@ export default function DrawingCanvas (props) {
       element: parent,
       engine,
       options: {
-        wireframes: true,
+        wireframes: false,
         background: 'yellow',
         showAngleIndicator: true,
         showCollisions: true,
@@ -40,10 +45,10 @@ export default function DrawingCanvas (props) {
 
     Composite.add(engine.world, [
       // walls
-      Bodies.rectangle(300, 0, 600, 50, { isStatic: true, label: 'wall' }),
-      Bodies.rectangle(300, 600, 600, 50, { isStatic: true, label: 'wall' }),
-      Bodies.rectangle(600, 300, 50, 600, { isStatic: true, label: 'wall' }),
-      Bodies.rectangle(0, 300, 50, 600, { isStatic: true, label: 'wall' })
+      Bodies.rectangle(300, -50, 600, 100, { isStatic: true, label: 'wall' }),
+      Bodies.rectangle(300, 650, 600, 100, { isStatic: true, label: 'wall' }),
+      Bodies.rectangle(650, 300, 100, 600, { isStatic: true, label: 'wall' }),
+      Bodies.rectangle(-50, 300, 100, 600, { isStatic: true, label: 'wall' })
 
     ])
     // const ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true })
