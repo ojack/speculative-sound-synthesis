@@ -107,7 +107,7 @@ export default function DrawingCanvas (props) {
       }
     })
 
-    Events.on(mouseConstraint, 'startdrag', (e) => { console.log('drag started', e) })
+    // Events.on(mouseConstraint, 'startdrag', (e) => { console.log('drag started', e) })
 
     Events.on(mouseConstraint, 'mousedown', (e) => {
       // console.log('mousedown', mouseConstraint, mouseConstraint.constraint.bodyB)
