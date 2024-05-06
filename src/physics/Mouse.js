@@ -34,6 +34,7 @@ export default function Mouse () {
     mouse.wheelDelta = 0
     mouse.button = -1
     mouse.pixelRatio = parseInt(mouse.element.getAttribute('data-pixel-ratio'), 10) || 1
+    mouse.touches = []
 
     mouse.sourceEvents = {
       mousemove: null,
@@ -49,7 +50,10 @@ export default function Mouse () {
       if (touches) {
         mouse.button = 0
         event.preventDefault()
+        // console.log(event.touches.length)
       }
+
+      mouse.touches = event.touches
 
       mouse.absolute.x = position.x
       mouse.absolute.y = position.y
@@ -68,6 +72,7 @@ export default function Mouse () {
       } else {
         mouse.button = event.button
       }
+      mouse.touches = event.touches
 
       mouse.absolute.x = position.x
       mouse.absolute.y = position.y
@@ -85,6 +90,7 @@ export default function Mouse () {
       if (touches) {
         event.preventDefault()
       }
+      mouse.touches = event.touches
 
       mouse.button = -1
       mouse.absolute.x = position.x
