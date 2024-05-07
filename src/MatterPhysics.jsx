@@ -123,17 +123,17 @@ export default function DrawingCanvas (props) {
         //   Bodies.re
         //   shape.render = fillStyle = '#f00'
         Composite.add(engine.world, shape)
-        console.log('touches', mouse.touches)
+        // console.log('touches', mouse.touches)
         // if (mouse.touches.length > 0) render.options.background = 'blue'
       }
     })
 
-    Events.on(mouseConstraint, 'mousemove', (e) => {
-      // console.log('mousedown', mouseConstraint, mouseConstraint.constraint.bodyB)
-      if (shape !== null && mouse.touches.length > 0) {
-        console.log('touches', mouse.touches)
-      }
-    })
+    // Events.on(mouseConstraint, 'mousemove', (e) => {
+    //   // console.log('mousedown', mouseConstraint, mouseConstraint.constraint.bodyB)
+    //   // if (shape !== null && mouse.touches.length > 0) {
+    //   //   console.log('touches', mouse.touches)
+    //   // }
+    // })
 
     Events.on(mouseConstraint, 'mouseup', (e) => {
       shape = null
@@ -214,7 +214,7 @@ export default function DrawingCanvas (props) {
 
     function run () {
       // Body.setVelocity(boxA, { x: 0, y: -2 })
-      console.log(ongoingTouches)
+      // console.log(ongoingTouches)
 
       window.requestAnimationFrame(run)
       // props.setStore('params', 'x0', 'val', boxA.position.x)
