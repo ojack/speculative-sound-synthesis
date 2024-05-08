@@ -92,15 +92,10 @@ function Faust (props) {
         // @todo: how to change params when first loaded?
         createEffect(() => {
           // @todo: ???use create memo to calculate values
-          // console.log(address, props.params[i].val)
-          // console.log('slider effect', faustParams.sliders, draw, props.params)
+          // @todo: how to check whether parameter exists??
+
           const param = props.params[draw]
-          // console.log('param is', param)
-          // const val = param.val / (param.max - param.min) - param.min
-          // const val = props.params[draw].val / (props.params[draw].max - props.params[draw].min) - props.params[draw].min
-          // const newVal = min + val * (max - min)
           const newVal = map(param.val, param.min, param.max, min, max)
-          // console.log(address, newVal)
           faustEl.node?.setParamValue(address, newVal)
         })
       }

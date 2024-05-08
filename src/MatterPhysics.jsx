@@ -4,7 +4,7 @@ import _Mouse from './physics/Mouse.js'
 import _MouseConstraint from './physics/MouseConstraint.js'
 
 // import HydraCanvas from './HydraCanvas.jsx'
-export default function DrawingCanvas (props) {
+export default function MatterPhysics (props) {
   let parent
   const Mouse = _Mouse()
   const MouseConstraint = _MouseConstraint()
@@ -38,18 +38,27 @@ export default function DrawingCanvas (props) {
       }
     })
 
-    // create two boxes and a ground
-    const boxA = Bodies.rectangle(400, 200, 160, 100, { restitution: 1, friction: 0, frictionAir: 0, frictionStatic: 0, angle: 10 })
-    const boxB = Bodies.rectangle(450, 50, 100, 100, { restitution: 1, friction: 0, frictionAir: 0, frictionStatic: 0 })
+    // add one of each type
+    const bodies = props.store.shapeTypes.map((type) => {
+      const body = props.store.shapes[type].create()
+      Body.setVelocity(body, { x: 0, y: -10 })
+      return body
+    })
 
-    Body.setVelocity(boxA, { x: 0, y: -10 })
+    bodies.push(props.store.shapes.circle.create())
+
+    // create two boxes and a ground
+    // const boxA = Bodies.rectangle(400, 200, 160, 100, { restitution: 1, friction: 0, frictionAir: 0, frictionStatic: 0, angle: 10 })
+    // const boxB = Bodies.rectangle(450, 50, 100, 100, { restitution: 1, friction: 0, frictionAir: 0, frictionStatic: 0 })
+
+    // Body.setVelocity(boxA, { x: 0, y: -10 })
 
     Composite.add(engine.world, [
       // walls
-      Bodies.rectangle(300, -50, 600, 100, { isStatic: true, label: 'wall' }),
-      Bodies.rectangle(300, 650, 600, 100, { isStatic: true, label: 'wall' }),
-      Bodies.rectangle(650, 300, 100, 600, { isStatic: true, label: 'wall' }),
-      Bodies.rectangle(-50, 300, 100, 600, { isStatic: true, label: 'wall' })
+      Bodies.rectangle(300, -50, 600, 100, { isStatic: true, label: 'rect' }),
+      Bodies.rectangle(300, 650, 600, 100, { isStatic: true, label: 'rect' }),
+      Bodies.rectangle(650, 300, 100, 600, { isStatic: true, label: 'rect' }),
+      Bodies.rectangle(-50, 300, 100, 600, { isStatic: true, label: 'rect' })
 
     ])
     // const ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true })
@@ -57,7 +66,8 @@ export default function DrawingCanvas (props) {
     // add all of the bodies to the world
     // Composite.add(engine.world, [boxA])
 
-    Composite.add(engine.world, [boxA, boxB])
+    // Composite.add(engine.world, [boxA, boxB])
+    Composite.add(engine.world, bodies)
 
     // available events: https://brm.io/matter-js/docs/classes/Engine.html#events
     // https://brm.io/matter-js/docs/classes/Collision.html
@@ -65,21 +75,24 @@ export default function DrawingCanvas (props) {
     Events.on(engine, 'collisionStart', function (event) {
       const pairs = event.pairs
 
-      // console.log('COLLISION', pairs)
-      props.setStore('params', 'isColliding', 'val', 1.0)
-
+      console.log('COLLISION', pairs)
       for (let i = 0, j = pairs.length; i !== j; ++i) {
-        const pair = pairs[i]
-        // console.log('pairs', pair, pair.bodyA.angle)
-        props.setStore('params', 'depth', 'val', pair.collision.depth)
-        props.setStore('params', 'angle', 'val', pair.bodyA.angle)
-
-        // if (pair.bodyA === collider) {
-        //     pair.bodyB.render.strokeStyle = colorA;
-        // } else if (pair.bodyB === collider) {
-        //     pair.bodyA.render.strokeStyle = colorA;
-        // }
+        props.updateRelationship(pairs[i], true)
       }
+      //   props.setStore('params', 'isColliding', 'val', 1.0)
+
+      // for (let i = 0, j = pairs.length; i !== j; ++i) {
+      //   const pair = pairs[i]
+      //   // console.log('pairs', pair, pair.bodyA.angle)
+      //   props.setStore('params', 'depth', 'val', pair.collision.depth)
+      //   props.setStore('params', 'angle', 'val', pair.bodyA.angle)
+
+      //   // if (pair.bodyA === collider) {
+      //   //     pair.bodyB.render.strokeStyle = colorA;
+      //   // } else if (pair.bodyB === collider) {
+      //   //     pair.bodyA.render.strokeStyle = colorA;
+      //   // }
+      // }
 
       // for (var i = 0, j = pairs.length; i != j; ++i) {
       //     var pair = pairs[i];
@@ -93,7 +106,10 @@ export default function DrawingCanvas (props) {
     })
 
     Events.on(engine, 'collisionEnd', function (event) {
-      props.setStore('params', 'isColliding', 'val', 0.0)
+      // props.setStore('params', 'isColliding', 'val', 0.0)
+      for (let i = 0, j = event.pairs.length; i !== j; ++i) {
+        props.updateRelationship(event.pairs[i], false)
+      }
     })
 
     const mouse = Mouse.create(render.canvas)
@@ -117,7 +133,8 @@ export default function DrawingCanvas (props) {
       if (mouseConstraint.constraint.bodyB === null) {
         // console.log('adding', mouse)
         shape = Bodies.rectangle(mouse.absolute.x, mouse.absolute.y, 50, 50, {
-          render: { visible: true, fillStyle: '#f36' }
+          render: { visible: true, fillStyle: '#f36' },
+          label: 'circle'
         })
 
         //   Bodies.re

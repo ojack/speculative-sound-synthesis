@@ -1,21 +1,21 @@
 import { Bodies } from 'matter-js'
-import { djembe, marimba, feedbackToy, marimbaDelay } from './dsp/faustInstruments.js'
+import { djembe, marimba, marimbaDelay } from './../dsp/faustInstruments.js'
 
 /*
 to do: best data structure for representing relationships, don't want to duplicate
 */
 const circle = {
-  create: ({ x = 100, y = 100 }) => Bodies.circle(x, y, 20 + Math.random() * 20, { label: 'circle' }),
+  create: ({ x = 100, y = 100 } = {}) => Bodies.circle(x, y, 20 + Math.random() * 20, { label: 'circle', restitution: 1, friction: 0, frictionAir: 0, frictionStatic: 0 }),
   relationships: {
-    circle: 'drum-collide',
+    circle: 'marimba-delay',
     rect: 'marimba-ting'
   }
 }
 
 const rect = {
-  create: ({ x = 100, y = 200 }) => Bodies.rectangle(x, y, 20 + Math.random() * 100, 20 + Math.random() * 100, { label: 'rect' }),
+  create: ({ x = 100, y = 200 } = {}) => Bodies.rectangle(x, y, 20 + Math.random() * 500, 20 + Math.random() * 100, { label: 'rect', restitution: 0.99, friction: 0, frictionAir: 0, frictionStatic: 0, angle: 10 }),
   relationships: {
-    rect: 'marimba-delay',
+    rect: 'drum-collide',
     circle: 'marimba-ting'
   }
 }
@@ -28,9 +28,6 @@ const fantasyRelationships = {
   },
   'marimba-ting': {
     dsp: marimba
-  },
-  'rect-circle': {
-    dsp: marimbaDelay
   },
   'marimba-delay': {
     dsp: marimbaDelay
