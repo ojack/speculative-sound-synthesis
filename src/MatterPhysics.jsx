@@ -45,7 +45,7 @@ export default function MatterPhysics (props) {
       return body
     })
 
-    bodies.push(props.store.shapes.circle.create())
+    // bodies.push(props.store.shapes.circle.create())
 
     // create two boxes and a ground
     // const boxA = Bodies.rectangle(400, 200, 160, 100, { restitution: 1, friction: 0, frictionAir: 0, frictionStatic: 0, angle: 10 })
@@ -69,6 +69,7 @@ export default function MatterPhysics (props) {
     // Composite.add(engine.world, [boxA, boxB])
     Composite.add(engine.world, bodies)
 
+    let currentPairs = []
     // available events: https://brm.io/matter-js/docs/classes/Engine.html#events
     // https://brm.io/matter-js/docs/classes/Collision.html
     // maybe use tangent?
@@ -78,7 +79,12 @@ export default function MatterPhysics (props) {
       // console.log('COLLISION', pairs)
       for (let i = 0, j = pairs.length; i !== j; ++i) {
         props.updateRelationship(pairs[i], true)
+        console.log('collision', event.pairs[i], event.pairs[i].isActive)
+        currentPairs.push(pairs[i])
       }
+      // currentPairs = pairs
+      // currentPairs.concat(pairs)
+      console.log(currentPairs, pairs)
       //   props.setStore('params', 'isColliding', 'val', 1.0)
 
       // for (let i = 0, j = pairs.length; i !== j; ++i) {
@@ -109,7 +115,10 @@ export default function MatterPhysics (props) {
       // props.setStore('params', 'isColliding', 'val', 0.0)
       for (let i = 0, j = event.pairs.length; i !== j; ++i) {
         props.updateRelationship(event.pairs[i], false)
+        console.log('ending', event.pairs[i], event.pairs[i].isActive)
       }
+      currentPairs = currentPairs.filter(pair => pair.isActive)
+      console.log(currentPairs)
     })
 
     const mouse = Mouse.create(render.canvas)
@@ -173,6 +182,11 @@ export default function MatterPhysics (props) {
       // console.log(ongoingTouches)
 
       window.requestAnimationFrame(run)
+      // console.log(currentPairs)
+
+      for (let i = 0, j = currentPairs.length; i !== j; ++i) {
+        props.updateRelationship(currentPairs[i], true)
+      }
       // props.setStore('params', 'x0', 'val', boxA.position.x)
       // props.setStore('params', 'y0', 'val', boxA.position.y)
       // props.setStore('params', 'x1', 'val', boxB.position.x)

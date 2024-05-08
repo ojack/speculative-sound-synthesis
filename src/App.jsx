@@ -54,15 +54,19 @@ function App () {
     showLanding: true
   })
 
-  function updateRelationship (pair, isColliding = false) {
+  function updateRelationship (pair) {
     const { bodyA, bodyB } = pair
+    const isColliding = pair.isActive
     const relationshipLabel = store.shapes[bodyA.label].relationships[bodyB.label]
-    //  console.log('updating', pair, bodyA.label, bodyB.label, store.shapes[bodyA.label].relationships, relationshipLabel)
+    console.log('updating', pair, bodyA.label, bodyB.label, store.shapes[bodyA.label].relationships, relationshipLabel)
 
     setStore('relationships', relationshipLabel, 'params', 'isColliding', 'val', isColliding)
     setStore('relationships', relationshipLabel, 'params', 'depth', 'val', pair.collision.depth)
     setStore('relationships', relationshipLabel, 'params', 'angle', 'val', pair.bodyA.angle)
-
+    setStore('relationships', relationshipLabel, 'params', 'x0', 'val', pair.bodyA.position.x)
+    setStore('relationships', relationshipLabel, 'params', 'x1', 'val', pair.bodyB.position.x)
+    setStore('relationships', relationshipLabel, 'params', 'y0', 'val', pair.bodyA.position.y)
+    setStore('relationships', relationshipLabel, 'params', 'y1', 'val', pair.bodyB.position.y)
     // props.setStore('params', 'depth', 'val', pair.collision.depth)
     //   props.setStore('params', 'angle', 'val', pair.bodyA.angle)
   }

@@ -113,10 +113,10 @@ import("stdfaust.lib");
 
 // Use "sliders" to add parameters to control the instrument
 lp1 = hslider("lp1", 100, 50, 800, 0.001);
-f1 = hslider("f1", 100, 30, 330, 0.0001);
+f1 = hslider("f1[draw:y0]", 100, 30, 330, 0.0001);
 f2 = hslider("f2[draw:x1]", 123, 30, 330, 0.0001);
 f3 = hslider("f3[draw:x0]", 87, 30, 330, 0.0001);
-pulseAmt = hslider("pulse", 0.017, 0, 1, 0.0001);
+pulseAmt = hslider("pulse[draw:isColliding]", 0.0, 0, 1, 0.0001);
 noiseAmt = hslider("noise", 0.076, 0, 1, 0.0001);
 
 // Convert frequency to delay line length in samples
@@ -138,11 +138,9 @@ lp2 = hslider("lp2", 15000, 100, 15000, 0.0001);
 
 rev_st = re.zita_rev1_stereo(0, 200, 6000, 10, 20, 44100);
 
-// process = _*preamp : fi.lowpass(1, lp1) <: rev_st;
-
 // Extreme compressor
 comp = *(5) : co.limiter_1176_R4_mono : *(0.5);
 
 process = exc : res : comp : _*preamp : fi.lowpass(1, lp2) <: rev_st;`
 
-export { djembe, feedbackToy, marimba, marimbaDelay }
+export { djembe, feedbackToy, marimba, marimbaDelay, resonantDrone }
