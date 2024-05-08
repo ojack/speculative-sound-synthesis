@@ -57,7 +57,7 @@ function App () {
   function updateRelationship (pair, isColliding = false) {
     const { bodyA, bodyB } = pair
     const relationshipLabel = store.shapes[bodyA.label].relationships[bodyB.label]
-    console.log('updating', pair, bodyA.label, bodyB.label, store.shapes[bodyA.label].relationships, relationshipLabel)
+    //  console.log('updating', pair, bodyA.label, bodyB.label, store.shapes[bodyA.label].relationships, relationshipLabel)
 
     setStore('relationships', relationshipLabel, 'params', 'isColliding', 'val', isColliding)
     setStore('relationships', relationshipLabel, 'params', 'depth', 'val', pair.collision.depth)

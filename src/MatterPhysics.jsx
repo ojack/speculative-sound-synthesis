@@ -41,7 +41,7 @@ export default function MatterPhysics (props) {
     // add one of each type
     const bodies = props.store.shapeTypes.map((type) => {
       const body = props.store.shapes[type].create()
-      Body.setVelocity(body, { x: 0, y: -10 })
+      // Body.setVelocity(body, { x: 0, y: -10 })
       return body
     })
 
@@ -75,7 +75,7 @@ export default function MatterPhysics (props) {
     Events.on(engine, 'collisionStart', function (event) {
       const pairs = event.pairs
 
-      console.log('COLLISION', pairs)
+      // console.log('COLLISION', pairs)
       for (let i = 0, j = pairs.length; i !== j; ++i) {
         props.updateRelationship(pairs[i], true)
       }
@@ -167,67 +167,6 @@ export default function MatterPhysics (props) {
 
     // // run the engine
     // Runner.run(runner, engine)
-    let ongoingTouches = []
-
-    function copyTouch ({ identifier, pageX, pageY }) {
-      return { identifier, pageX, pageY }
-    }
-
-    function ongoingTouchIndexById (idToFind) {
-      for (let i = 0; i < ongoingTouches.length; i++) {
-        const id = ongoingTouches[i].identifier
-
-        if (id === idToFind) {
-          return i
-        }
-      }
-      return -1 // not found
-    }
-
-    window.addEventListener('touchstart', (e) => {
-      e.preventDefault()
-      // const touches = e.changedTouches
-      // console.log('touches', touches)
-
-      // for (let i = 0; i < touches.length; i++) {
-      //   ongoingTouches.push(copyTouch(touches[i]))
-      // }
-
-      ongoingTouches = e.touches
-    })
-    window.addEventListener('touchend', (e) => {
-      e.preventDefault()
-      // const touches = e.changedTouches
-
-      // for (let i = 0; i < touches.length; i++) {
-      //   const idx = ongoingTouchIndexById(touches[i].identifier)
-      //   if (idx >= 0) ongoingTouches.splice(idx, 1) // remove it; we're done
-      // }
-      ongoingTouches = e.touches
-    })
-    window.addEventListener('touchcancel', (e) => {
-      e.preventDefault()
-      // const touches = e.changedTouches
-
-      // for (let i = 0; i < touches.length; i++) {
-      //   const idx = ongoingTouchIndexById(touches[i].identifier)
-      //   if (idx >= 0) ongoingTouches.splice(idx, 1) // remove it; we're done
-      // }
-      ongoingTouches = e.touches
-    })
-
-    window.addEventListener('touchmove', (e) => {
-      e.preventDefault()
-      console.log('touche moves', e.touches)
-
-      // const touches = e.changedTouches
-
-      // for (let i = 0; i < touches.length; i++) {
-      //   const idx = ongoingTouchIndexById(touches[i].identifier)
-      //   if (idx >= 0) ongoingTouches.splice(idx, 1, copyTouch(touches[i]))
-      // }
-      ongoingTouches = e.touches
-    })
 
     function run () {
       // Body.setVelocity(boxA, { x: 0, y: -2 })
@@ -238,15 +177,7 @@ export default function MatterPhysics (props) {
       // props.setStore('params', 'y0', 'val', boxA.position.y)
       // props.setStore('params', 'x1', 'val', boxB.position.x)
       // props.setStore('params', 'y1', 'val', boxB.position.y)
-      if (ongoingTouches.length <= 0) {
-        render.options.background = 'yellow'
-      } else if (ongoingTouches.length > 0) {
-        render.options.background = 'pink'
-      } else if (ongoingTouches.length > 1) {
-        render.options.background = 'green'
-      } else if (ongoingTouches.length > 2) {
-        render.options.background = 'orange'
-      }
+
       Engine.update(engine, 1000 / 60)
       // console.log(boxA.position)
     }
