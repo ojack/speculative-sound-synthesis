@@ -5,7 +5,7 @@ import _MouseConstraint from './physics/MouseConstraint.js'
 
 // import HydraCanvas from './HydraCanvas.jsx'
 export default function MatterPhysics (props) {
-  let parent
+  let parent, canvas
   const Mouse = _Mouse()
   const MouseConstraint = _MouseConstraint()
 
@@ -25,16 +25,18 @@ export default function MatterPhysics (props) {
 
     // create a renderer
     const render = Render.create({
-      element: parent,
+      // element: parent,
+      canvas,
       engine,
       options: {
         wireframes: false,
-        background: 'yellow',
+        background: 'white',
         showAngleIndicator: true,
         showCollisions: true,
         showVelocity: true,
-        width: 600,
-        height: 600
+        width: props.width,
+        height: props.height
+        // canvas
       }
     })
 
@@ -53,12 +55,15 @@ export default function MatterPhysics (props) {
 
     // Body.setVelocity(boxA, { x: 0, y: -10 })
 
+    const w = props.width
+    const h = props.height
+    const thick = 100
     Composite.add(engine.world, [
       // walls
-      Bodies.rectangle(300, -50, 600, 100, { isStatic: true, label: 'rect' }),
-      Bodies.rectangle(300, 650, 600, 100, { isStatic: true, label: 'rect' }),
-      Bodies.rectangle(650, 300, 100, 600, { isStatic: true, label: 'rect' }),
-      Bodies.rectangle(-50, 300, 100, 600, { isStatic: true, label: 'rect' })
+      Bodies.rectangle(w / 2, -thick / 2, w, thick, { isStatic: true, label: 'rect' }),
+      Bodies.rectangle(w / 2, h + thick / 2, w, thick, { isStatic: true, label: 'rect' }),
+      Bodies.rectangle(w + thick / 2, h / 2, thick, h, { isStatic: true, label: 'rect' }),
+      Bodies.rectangle(-thick, h / 2, thick, h, { isStatic: true, label: 'rect' })
 
     ])
     // const ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true })
@@ -209,9 +214,12 @@ export default function MatterPhysics (props) {
     // })
   })
 
-  return <div
-            ref={parent}
+  return <div ref={parent}>
+    <canvas
+            ref={canvas}
+            class="border-black border-2"
             style={{ width: `${props.width}px`, height: `${props.height}px` }}
-              />
+            />
+              </div>
   // {/* <HydraCanvas class="absolute top-0 left-0" width={props.width} height={props.height} code={() => 'voronoi().out()'} s0={canvas} /> */}
 }

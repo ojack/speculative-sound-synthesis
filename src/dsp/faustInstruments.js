@@ -134,7 +134,7 @@ loop(f) = + ~ (de.fdelay2(9000, freq2len(f)) : _*0.8);
 res = loop(f1 - 1 + 2*no.lfnoise0(1)) : loop(f2) : loop(f3);
 
 preamp = hslider("preamp", 0.5, 0, 1, 0.0001);
-lp2 = hslider("lp2", 15000, 100, 15000, 0.0001);
+lp2 = hslider("lp2", 3000, 100, 15000, 0.0001);
 
 rev_st = re.zita_rev1_stereo(0, 200, 6000, 10, 20, 44100);
 
