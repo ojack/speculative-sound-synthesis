@@ -6,14 +6,15 @@ to do: best data structure for representing relationships, don't want to duplica
 */
 const circle = {
   create: ({ x = 100, y = 100 } = {}) => {
-    const c = Bodies.circle(x, y, 20 + Math.random() * 20, { label: 'circle', restitution: 0.8, friction: 0.0, frictionAir: 0.0, frictionStatic: 0 })
+    const c = Bodies.circle(x, y, 20 + Math.random() * 20, { label: 'circle', restitution: 1, friction: 0.0, frictionAir: 0.0, frictionStatic: 0 })
     Body.setVelocity(c, { x: 5, y: 0 })
     return c
   },
   relationships: {
-    circle: 'marimba-delay',
+    circle: 'marimba-ting',
     // rect: 'marimba-ting'
-    rect: 'resonantDrone'
+    rect: 'marimba-ting',
+    line: 'resonantDrone'
   }
 }
 
@@ -26,25 +27,34 @@ const circle = {
 // }
 
 const rect = {
-  create: ({ x = 250, y = 250 } = {}) => Bodies.rectangle(x, y, 300 + Math.random() * 280, 20 + Math.random() * 40, { label: 'rect', isSensor: true, restitution: 0.99, friction: 0, frictionAir: 0, frictionStatic: 0, angle: 10 }),
+  create: ({ x = 250, y = 250 } = {}) => Bodies.rectangle(x, y, 100, 100, { label: 'rect', restitution: 0.99, friction: 0, frictionAir: 0, frictionStatic: 0, angle: 10, render: { /* lineWidth: 4, strokeStyle: 'green' */} }),
   relationships: {
-    rect: 'drum-collide',
+    rect: 'marimba-ting',
+    circle: 'marimba-ting',
+    line: 'resonantDrone'
+  }
+}
+
+const line = {
+  create: ({ x = 250, y = 250 } = {}) => Bodies.rectangle(x, y, 300 + Math.random() * 280, 4 + Math.random() * 15, { label: 'line', isSensor: true, render: { fillStyle: 'white' }, restitution: 0.99, friction: 0, frictionAir: 0, frictionStatic: 0, angle: 10 }),
+  relationships: {
+    rect: 'resonantDrone',
     circle: 'resonantDrone'
   }
 }
 
-const fantasyShapes = { circle, rect }
+const fantasyShapes = { line, circle, rect }
 
 const fantasyRelationships = {
-  'drum-collide': {
-    dsp: djembe
-  },
+  // 'drum-collide': {
+  //   dsp: djembe
+  // },
   'marimba-ting': {
     dsp: marimba
   },
-  'marimba-delay': {
-    dsp: marimbaDelay
-  },
+  // 'marimba-delay': {
+  //   dsp: marimbaDelay
+  // },
   resonantDrone: {
     dsp: resonantDrone
   }

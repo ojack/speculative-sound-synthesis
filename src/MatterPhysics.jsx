@@ -1,5 +1,5 @@
 import { onMount, mergeProps, createEffect } from 'solid-js'
-import { Engine, Render, Runner, Events, Body, Bodies, Composite } from 'matter-js'
+import { Engine, Render, Runner, Events, Body, Bodies, Composite, World } from 'matter-js'
 import _Mouse from './physics/Mouse.js'
 import _MouseConstraint from './physics/MouseConstraint.js'
 
@@ -30,9 +30,11 @@ export default function MatterPhysics (props) {
       engine,
       options: {
         wireframes: false,
-        background: 'white',
+        // background: props.backgroundColor,
+        background: 'rgba(0, 0, 0, 0)',
         showAngleIndicator: true,
         showCollisions: true,
+        showSeparations: true,
         showVelocity: true,
         width: props.width,
         height: props.height
@@ -41,13 +43,13 @@ export default function MatterPhysics (props) {
     })
 
     // add one of each type
-    const bodies = props.store.shapeTypes.map((type) => {
-      const body = props.store.shapes[type].create()
+    const bodies = props.shapeTypes.map((type) => {
+      const body = props.shapes[type].create()
       // Body.setVelocity(body, { x: 0, y: -10 })
       return body
     })
 
-    // bodies.push(props.store.shapes.circle.create())
+    // bodies.push(props.shapes.circle.create())
 
     // create two boxes and a ground
     // const boxA = Bodies.rectangle(400, 200, 160, 100, { restitution: 1, friction: 0, frictionAir: 0, frictionStatic: 0, angle: 10 })
@@ -63,7 +65,7 @@ export default function MatterPhysics (props) {
       Bodies.rectangle(w / 2, -thick / 2, w, thick, { isStatic: true, label: 'rect' }),
       Bodies.rectangle(w / 2, h + thick / 2, w, thick, { isStatic: true, label: 'rect' }),
       Bodies.rectangle(w + thick / 2, h / 2, thick, h, { isStatic: true, label: 'rect' }),
-      Bodies.rectangle(-thick, h / 2, thick, h, { isStatic: true, label: 'rect' })
+      Bodies.rectangle(-thick / 2, h / 2, thick, h, { isStatic: true, label: 'rect' })
 
     ])
     // const ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true })
@@ -84,12 +86,12 @@ export default function MatterPhysics (props) {
       // console.log('COLLISION', pairs)
       for (let i = 0, j = pairs.length; i !== j; ++i) {
         props.updateRelationship(pairs[i], true)
-        console.log('collision', event.pairs[i], event.pairs[i].isActive)
+        // console.log('collision', event.pairs[i], event.pairs[i].isActive)
         currentPairs.push(pairs[i])
       }
       // currentPairs = pairs
       // currentPairs.concat(pairs)
-      console.log(currentPairs, pairs)
+      // console.log(currentPairs, pairs)
       //   props.setStore('params', 'isColliding', 'val', 1.0)
 
       // for (let i = 0, j = pairs.length; i !== j; ++i) {
@@ -120,10 +122,10 @@ export default function MatterPhysics (props) {
       // props.setStore('params', 'isColliding', 'val', 0.0)
       for (let i = 0, j = event.pairs.length; i !== j; ++i) {
         props.updateRelationship(event.pairs[i], false)
-        console.log('ending', event.pairs[i], event.pairs[i].isActive)
+        // console.log('ending', event.pairs[i], event.pairs[i].isActive)
       }
       currentPairs = currentPairs.filter(pair => pair.isActive)
-      console.log(currentPairs)
+      // console.log(currentPairs)
     })
 
     const mouse = Mouse.create(render.canvas)
@@ -144,18 +146,29 @@ export default function MatterPhysics (props) {
     Events.on(mouseConstraint, 'mousedown', (e) => {
       // console.log('mousedown', mouseConstraint, mouseConstraint.constraint.bodyB)
       // If not grabbing an existing object, add a new object
-      if (mouseConstraint.constraint.bodyB === null) {
-        // console.log('adding', mouse)
-        shape = Bodies.rectangle(mouse.absolute.x, mouse.absolute.y, 50, 50, {
-          render: { visible: true, fillStyle: '#f36' },
-          label: 'circle'
-        })
+      console.log('BRUSH', props.currentBrush)
+      if (props.currentBrush !== 'eraser') {
+        if (mouseConstraint.constraint.bodyB === null) {
+          // console.log('adding', mouse)
+          const { x, y } = mouse.absolute
+          shape = props.shapes[props.currentBrush].create({ x, y })
+          // shape = Bodies.rectangle(mouse.absolute.x, mouse.absolute.y, 50, 50, {
+          //   render: { visible: true, fillStyle: '#f36' },
+          //   label: 'circle'
+          // })
 
-        //   Bodies.re
-        //   shape.render = fillStyle = '#f00'
-        Composite.add(engine.world, shape)
-        // console.log('touches', mouse.touches)
-        // if (mouse.touches.length > 0) render.options.background = 'blue'
+          //   Bodies.re
+          //   shape.render = fillStyle = '#f00'
+          Composite.add(engine.world, shape)
+          // console.log('touches', mouse.touches)
+          // if (mouse.touches.length > 0) render.options.background = 'blue'
+        }
+      } else {
+        if (mouseConstraint.constraint.bodyB !== null) {
+          // if ()
+          console.log('removing', mouseConstraint.constraint.bodyB)
+          Composite.remove(engine.world, mouseConstraint.constraint.bodyB)
+        }
       }
     })
 
@@ -189,7 +202,7 @@ export default function MatterPhysics (props) {
       window.requestAnimationFrame(run)
       // console.log(currentPairs)
 
-      for (let i = 0, j = currentPairs.length; i !== j; ++i) {
+      for (let i = 0; i < currentPairs.length; i++) {
         props.updateRelationship(currentPairs[i], true)
       }
       // props.setStore('params', 'x0', 'val', boxA.position.x)
@@ -214,11 +227,11 @@ export default function MatterPhysics (props) {
     // })
   })
 
-  return <div ref={parent}>
+  return <div ref={parent} style={{ border: `solid 1px ${props.color}` }}>
     <canvas
             ref={canvas}
-            class="border-black border-2"
-            style={{ width: `${props.width}px`, height: `${props.height}px` }}
+            class=""
+            style={{ width: `${props.width}px`, height: `${props.height}px`, border: 'none' }}
             />
               </div>
   // {/* <HydraCanvas class="absolute top-0 left-0" width={props.width} height={props.height} code={() => 'voronoi().out()'} s0={canvas} /> */}

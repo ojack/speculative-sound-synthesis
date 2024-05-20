@@ -146,10 +146,10 @@ function Faust (props) {
         <div>
           <div class="flex">
             <For each={faustParams.sliders}>{(param, i) =>
-              <div class="p-1 border border-black">{param.label}:{param.draw} </div>
+              <div class="p-1 border text-xs" style={{ 'border-color': props.color }}>{param.label}:{param.draw} </div>
             }</For>
           </div>
-        <faust-editor ref={faustEl}>
+        <faust-editor ref={faustEl} style={{ '--main-bg-color': props.backgroundColor, '--main-color': props.color }}>
       {props.dsp}
         </faust-editor>
         </div>

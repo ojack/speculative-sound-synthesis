@@ -37,17 +37,22 @@ function App () {
     showLanding: false
   })
 
-  const [uiStore, setUiStore] = createStore({
-    width: 300,
-    height: 200
+  const [drawingStore, setDrawingStore] = createStore({
+    width: Math.min(window.innerWidth, 600),
+    height: 600,
+    currentBrush: 'circle',
+    backgroundColor: 'black',
+    color: 'white'
   })
+
+  window.setDrawingStore = setDrawingStore
 
   function updateRelationship (pair) {
     const { bodyA, bodyB } = pair
     const isColliding = pair.isActive
     const relationshipLabel = store.shapes[bodyA.label].relationships[bodyB.label]
     // console.log('updating', pair, bodyA.label, bodyB.label, store.shapes[bodyA.label].relationships, relationshipLabel)
-
+    // console.log(relationshipLabel, bodyA.label, bodyB.label, relationshipTypes)
     setStore('relationships', relationshipLabel, 'params', 'isColliding', 'val', isColliding)
     setStore('relationships', relationshipLabel, 'params', 'depth', 'val', pair.collision.depth)
     setStore('relationships', relationshipLabel, 'params', 'angle', 'val', pair.bodyA.angle)
@@ -55,21 +60,21 @@ function App () {
     setStore('relationships', relationshipLabel, 'params', 'x1', 'val', pair.bodyB.position.x)
     setStore('relationships', relationshipLabel, 'params', 'y0', 'val', pair.bodyA.position.y)
     setStore('relationships', relationshipLabel, 'params', 'y1', 'val', pair.bodyB.position.y)
-    // props.setStore('params', 'depth', 'val', pair.collision.depth)
-    //   props.setStore('params', 'angle', 'val', pair.bodyA.angle)
   }
 
   return (
     <>
     <Show when={!store.showLanding} fallback={<div onClick={() => { setStore('showLanding', false) }}>start</div>}>
-      <div class="w-full font-mono flex">
+      <div class="w-full font-mono flex" style={{ 'background-color': drawingStore.backgroundColor, color: drawingStore.color }}>
         {/* <DrawingCanvas params={store.params} width={600} height={600} setStore={setStore} /> */}
-        <MatterPhysics width={uiStore.width} height={uiStore.height} updateRelationship={updateRelationship} setStore={setStore} store={store}/>
-        <Toolbar setDrawingState={() => {}} />
+        <div class="felx flex-col">
+        <MatterPhysics {...drawingStore} {...store} updateRelationship={updateRelationship} setStore={setStore} />
+        <Toolbar {...drawingStore} setDrawingStore={setDrawingStore} />
+        </div>
         <div class="" style={{ width: '1000px' }}>
-          {/* <For each={store.relationshipTypes}>{(type, i) =>
-          <FaustEditor params={store.relationships[type].params} setStore={setStore} dsp={store.relationships[type].dsp}/>
-        }</For> */}
+          <For each={store.relationshipTypes}>{(type, i) =>
+          <FaustEditor {...drawingStore} params={store.relationships[type].params} setStore={setStore} dsp={store.relationships[type].dsp}/>
+        }</For>
           {/* <FaustEditor params={store.params} setStore={setStore} dsp={marimba}/> */}
           {/* <FaustEditor params={store.params} setStore={setStore} dsp={feedbackToy}/> */}
 

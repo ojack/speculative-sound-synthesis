@@ -1,18 +1,34 @@
+// const marimba = `import("stdfaust.lib");
+
+// process = pm.marimba(freq,strikePosition,strikeCutoff, strikeSharpness,gain,gate)*outGain
+// with{
+//     freq = hslider("v:marimba/h:[0]midi/[0]freq[style:knob][draw:angle]",60,50,400,0.01);
+//     gain = hslider("v:marimba/h:[0]midi/[2]gain[style:knob][draw:depth]",1,0.1,2.0,0.01);
+//     strikePosition = hslider("v:marimba/h:[1]otherParams/[0]strikePosition
+//     [midi:ctrl 1][style:knob]",0.5,0,1,0.01);
+//     strikeCutoff= 7000;
+//     strikeSharpness = hslider("v:marimba/h:[1]otherParams/[1]strikeSharpness[style:knob]",0.5,0.01,5,0.01);
+//     outGain = hslider("v:marimba/h:[1]otherParams/[2]outGain
+//     [style:knob]",1,0,1,0.01);
+//     //gate = button("v:marimba/[3]gate");
+//     gate = hslider("v:marimba/[1]gate[draw:isColliding]", 0.0, 0.0, 1.0, 1.0);
+// } <: _,_;`
+
 const marimba = `import("stdfaust.lib");
 
 process = pm.marimba(freq,strikePosition,strikeCutoff, strikeSharpness,gain,gate)*outGain
 with{
-    freq = hslider("v:marimba/h:[0]midi/[0]freq[style:knob][draw:angle]",60,50,400,0.01);
+    freq = hslider("v:marimba/h:[0]midi/[0]freq[style:knob][draw:x1]",60,50,800,0.01);
     gain = hslider("v:marimba/h:[0]midi/[2]gain[style:knob][draw:depth]",1,0.1,2.0,0.01);
     strikePosition = hslider("v:marimba/h:[1]otherParams/[0]strikePosition
     [midi:ctrl 1][style:knob]",0.5,0,1,0.01);
     strikeCutoff= 7000;
     strikeSharpness = hslider("v:marimba/h:[1]otherParams/[1]strikeSharpness[style:knob]",0.5,0.01,5,0.01);
     outGain = hslider("v:marimba/h:[1]otherParams/[2]outGain
-    [style:knob]",1,0,1,0.01);
+    [style:knob]",0.8,0,1,0.01);
     //gate = button("v:marimba/[3]gate");
     gate = hslider("v:marimba/[1]gate[draw:isColliding]", 0.0, 0.0, 1.0, 1.0);
-} <: _,_;`
+} <:  dm.freeverb_demo;`
 
 const marimbaDelay = `import("stdfaust.lib");
 del = hslider("del[draw:y]",0.1,0.01,1,0.01) : si.smoo;
@@ -49,6 +65,15 @@ with{
     //gate = button("v:djembe/[3]gate");
     gate = hslider("v:djembe/[1]gate[draw:isColliding]", 0.0, 0.0, 1.0, 1.0);
 } <: _,_;`
+
+const fbOscillators = `import("stdfaust.lib");
+
+f1 = hslider("f1[draw:x0]", 10, 10, 100, 0.1);
+f2 = hslider("f2[draw:x1]", 10, 10, 400, 0.1);
+f3 = hslider("f3[draw:y0]", 100, 10, 400, 0.1);
+f4 = hslider("f4[draw:y1]", 100, 4, 100, 0.1);
+
+process = os.osc(os.osc(f4)*f3+os.osc(f1)*f2)  <: _, _;`
 
 const feedbackToy = `import("stdfaust.lib");
 
