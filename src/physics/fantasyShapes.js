@@ -1,5 +1,7 @@
-import { Bodies, Body } from 'matter-js'
+import { Bodies, Body, Plugin } from 'matter-js'
 import { djembe, marimba, marimbaDelay, resonantDrone } from './../dsp/faustInstruments.js'
+// Plugin.register('matter-wrap')
+// use('matter-wrap')
 
 /*
 to do: best data structure for representing relationships, don't want to duplicate
@@ -36,7 +38,30 @@ const rect = {
 }
 
 const line = {
-  create: ({ x = 250, y = 250 } = {}) => Bodies.rectangle(x, y, 300 + Math.random() * 280, 4 + Math.random() * 15, { label: 'line', isSensor: true, render: { fillStyle: 'white' }, restitution: 0.99, friction: 0, frictionAir: 0, frictionStatic: 0, angle: 10 }),
+  create: ({ x = 250, y = 250 } = {}) => Bodies.rectangle(
+    x, y, 300 + Math.random() * 280, 4 + Math.random() * 15,
+    {
+      label: 'line',
+      isSensor: true,
+      plugin: {
+        wrap: {
+          min: {
+            x: 0,
+            y: 0
+          },
+          max: {
+            x: 500,
+            y: 500
+          }
+        }
+      },
+      render: { fillStyle: 'white' },
+      restitution: 0.99,
+      friction: 0,
+      frictionAir: 0,
+      frictionStatic: 0,
+      angle: 10
+    }),
   relationships: {
     rect: 'resonantDrone',
     circle: 'resonantDrone'

@@ -4,6 +4,7 @@ import FaustEditor from './FaustEditor.jsx'
 import MatterPhysics from './MatterPhysics.jsx'
 import { createStore } from 'solid-js/store'
 import { fantasyRelationships, fantasyShapes } from './physics/fantasyShapes.js'
+import world from './phantasy-worlds/basic.js'
 import Toolbar from './Toolbar.jsx'
 
 function App () {
@@ -37,29 +38,33 @@ function App () {
     showLanding: false
   })
 
-  const [drawingStore, setDrawingStore] = createStore({
+  const [constellationStore, setConstellationStore] = createStore({ constellations: world.constellations })
+
+  const drawingSettings = Object.assign({}, {
     width: Math.min(window.innerWidth, 600),
     height: 600,
     currentBrush: 'circle',
     backgroundColor: 'black',
     color: 'white'
-  })
+  }, world.settings)
+
+  const [drawingStore, setDrawingStore] = createStore(drawingSettings)
 
   window.setDrawingStore = setDrawingStore
 
   function updateRelationship (pair) {
-    const { bodyA, bodyB } = pair
-    const isColliding = pair.isActive
-    const relationshipLabel = store.shapes[bodyA.label].relationships[bodyB.label]
-    // console.log('updating', pair, bodyA.label, bodyB.label, store.shapes[bodyA.label].relationships, relationshipLabel)
-    // console.log(relationshipLabel, bodyA.label, bodyB.label, relationshipTypes)
-    setStore('relationships', relationshipLabel, 'params', 'isColliding', 'val', isColliding)
-    setStore('relationships', relationshipLabel, 'params', 'depth', 'val', pair.collision.depth)
-    setStore('relationships', relationshipLabel, 'params', 'angle', 'val', pair.bodyA.angle)
-    setStore('relationships', relationshipLabel, 'params', 'x0', 'val', pair.bodyA.position.x)
-    setStore('relationships', relationshipLabel, 'params', 'x1', 'val', pair.bodyB.position.x)
-    setStore('relationships', relationshipLabel, 'params', 'y0', 'val', pair.bodyA.position.y)
-    setStore('relationships', relationshipLabel, 'params', 'y1', 'val', pair.bodyB.position.y)
+    // const { bodyA, bodyB } = pair
+    // const isColliding = pair.isActive
+    // const relationshipLabel = store.shapes[bodyA.label].relationships[bodyB.label]
+    // // console.log('updating', pair, bodyA.label, bodyB.label, store.shapes[bodyA.label].relationships, relationshipLabel)
+    // // console.log(relationshipLabel, bodyA.label, bodyB.label, relationshipTypes)
+    // setStore('relationships', relationshipLabel, 'params', 'isColliding', 'val', isColliding)
+    // setStore('relationships', relationshipLabel, 'params', 'depth', 'val', pair.collision.depth)
+    // setStore('relationships', relationshipLabel, 'params', 'angle', 'val', pair.bodyA.angle)
+    // setStore('relationships', relationshipLabel, 'params', 'x0', 'val', pair.bodyA.position.x)
+    // setStore('relationships', relationshipLabel, 'params', 'x1', 'val', pair.bodyB.position.x)
+    // setStore('relationships', relationshipLabel, 'params', 'y0', 'val', pair.bodyA.position.y)
+    // setStore('relationships', relationshipLabel, 'params', 'y1', 'val', pair.bodyB.position.y)
   }
 
   return (
@@ -68,12 +73,12 @@ function App () {
       <div class="w-full font-mono flex" style={{ 'background-color': drawingStore.backgroundColor, color: drawingStore.color }}>
         {/* <DrawingCanvas params={store.params} width={600} height={600} setStore={setStore} /> */}
         <div class="felx flex-col">
-        <MatterPhysics {...drawingStore} {...store} updateRelationship={updateRelationship} setStore={setStore} />
+        <MatterPhysics {...drawingStore} {...constellationStore} {...store} updateRelationship={updateRelationship} setStore={setStore} />
         <Toolbar {...drawingStore} setDrawingStore={setDrawingStore} />
         </div>
         <div class="" style={{ width: '1000px' }}>
           <For each={store.relationshipTypes}>{(type, i) =>
-          <FaustEditor {...drawingStore} params={store.relationships[type].params} setStore={setStore} dsp={store.relationships[type].dsp}/>
+          <FaustEditor {...drawingStore} {...constellationStore} params={store.relationships[type].params} setStore={setStore} dsp={store.relationships[type].dsp}/>
         }</For>
           {/* <FaustEditor params={store.params} setStore={setStore} dsp={marimba}/> */}
           {/* <FaustEditor params={store.params} setStore={setStore} dsp={feedbackToy}/> */}

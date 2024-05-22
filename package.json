@@ -6,7 +6,7 @@
     "start": "vite",
     "dev": "vite --host",
     "build": "vite build",
-    "serve": "vite preview", 
+    "serve": "vite preview",
     "publish": "git subtree push --prefix=dist origin gh-pages"
   },
   "license": "MIT",
@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "matter-js": "^0.19.0",
+    "matter-wrap": "^0.2.0",
     "solid-icons": "^1.1.0",
     "solid-js": "^1.8.11"
   }
