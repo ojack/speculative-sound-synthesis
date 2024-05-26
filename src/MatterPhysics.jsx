@@ -1,6 +1,8 @@
 import { onMount, mergeProps, createEffect } from 'solid-js'
 import { createStore, unwrap } from 'solid-js/store'
 
+import { wrapToBounds } from './physics/matter-wrap.js'
+import { updateSignals } from './stores/constellation.js'
 import { Engine, Render, Runner, Events, Body, Bodies, Composite, World, use } from 'matter-js'
 import _Mouse from './physics/Mouse.js'
 import _MouseConstraint from './physics/MouseConstraint.js'
@@ -52,45 +54,7 @@ export default function MatterPhysics (props) {
 
     window.render = render
 
-    const bodyConstellations = props.constellations.map((c) => {
-      const constellation = c.bodies.map(b => {
-        const options = Object.assign({}, unwrap(props.bodyDefaults), unwrap(b))
-        console.log('CREATING', options)
-        if (options.isSensor) {
-          options.plugin = {
-            wrap: {
-              min: {
-                x: 0,
-                y: 0
-              },
-              max: {
-                x: 500,
-                y: 500
-              }
-            }
-          }
-        }
-        if (options.shape === 'circle') {
-          // return Bodies[options.shape](b.x, b.y, b.width, options)
-          // { label: 'circle', restitution: 1, friction: 0.0, frictionAir: 0.0, frictionStatic: 0 }
-          // return Bodies.circle(100, 100, 20 + Math.random() * 20, options)
-          // const { type, ...shapeOptions } = options // removes type parameter
-          // const { label, angle, friction, frictionAir, frictionStatic, isSensor, restitution, render, type, x, y, width, height } = options
-          return Bodies[options.shape](100, 100, 20 + Math.random() * 20, options)
-        }
-        return Bodies[options.shape](b.x, b.y, b.width, b.height, options)
-      })
-      const composite = Composite.create()
-      Composite.add(composite, constellation)
-      // Composite.add(engine.world, constellation)
-
-      return composite
-    }
-    )
-
-    console.log('CREATED composites', bodyConstellations)
-    Composite.add(engine.world, bodyConstellations)
-
+    // add walls
     const w = props.width
     const h = props.height
     const thick = 100
@@ -103,28 +67,41 @@ export default function MatterPhysics (props) {
 
     ])
 
-    // OLDER add one of each type
-    const bodies = props.shapeTypes.map((type) => {
-      const body = props.shapes[type].create()
-      // Body.setVelocity(body, { x: 0, y: -10 })
-      return body
-    })
+    // // OLDER add one of each type
+    // const bodies = props.shapeTypes.map((type) => {
+    //   const body = props.shapes[type].create()
+    //   // Body.setVelocity(body, { x: 0, y: -10 })
+    //   return body
+    // })
 
-    // bodies.push(props.shapes.circle.create())
+    // // bodies.push(props.shapes.circle.create())
 
-    // create two boxes and a ground
-    // const boxA = Bodies.rectangle(400, 200, 160, 100, { restitution: 1, friction: 0, frictionAir: 0, frictionStatic: 0, angle: 10 })
-    // const boxB = Bodies.rectangle(450, 50, 100, 100, { restitution: 1, friction: 0, frictionAir: 0, frictionStatic: 0 })
+    // // create two boxes and a ground
+    // // const boxA = Bodies.rectangle(400, 200, 160, 100, { restitution: 1, friction: 0, frictionAir: 0, frictionStatic: 0, angle: 10 })
+    // // const boxB = Bodies.rectangle(450, 50, 100, 100, { restitution: 1, friction: 0, frictionAir: 0, frictionStatic: 0 })
 
-    // Body.setVelocity(boxA, { x: 0, y: -10 })
+    // // Body.setVelocity(boxA, { x: 0, y: -10 })
 
-    // const ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true })
+    // // const ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true })
 
-    // add all of the bodies to the world
-    // Composite.add(engine.world, [boxA])
+    // // add all of the bodies to the world
+    // // Composite.add(engine.world, [boxA])
 
-    // Composite.add(engine.world, [boxA, boxB])
-    Composite.add(engine.world, bodies)
+    // // Composite.add(engine.world, [boxA, boxB])
+    // Composite.add(engine.world, bodies)
+
+    // add constellations
+    const bodyConstellations = props.constellations.map((c) => {
+      const composite = Composite.create()
+      Composite.add(composite, c.bodyObjects)
+      // Composite.add(engine.world, constellation)
+
+      return composite
+    }
+    )
+
+    // console.log('CREATED composites', bodyConstellations)
+    Composite.add(engine.world, bodyConstellations)
 
     let currentPairs = []
     // available events: https://brm.io/matter-js/docs/classes/Engine.html#events
@@ -135,7 +112,9 @@ export default function MatterPhysics (props) {
 
       // console.log('COLLISION', pairs)
       for (let i = 0, j = pairs.length; i !== j; ++i) {
-        props.updateRelationship(pairs[i], true)
+        // props.updateRelationship(pairs[i], true)
+        pairs[i].bodyA.isColliding = 1
+        pairs[i].bodyB.isColliding = 1
         // console.log('collision', event.pairs[i], event.pairs[i].isActive)
         currentPairs.push(pairs[i])
       }
@@ -170,8 +149,11 @@ export default function MatterPhysics (props) {
 
     Events.on(engine, 'collisionEnd', function (event) {
       // props.setStore('params', 'isColliding', 'val', 0.0)
-      for (let i = 0, j = event.pairs.length; i !== j; ++i) {
-        props.updateRelationship(event.pairs[i], false)
+      const pairs = event.pairs
+      for (let i = 0, j = pairs.length; i !== j; ++i) {
+        // props.updateRelationship(event.pairs[i], false)
+        pairs[i].bodyA.isColliding = 0
+        pairs[i].bodyB.isColliding = 0
         // console.log('ending', event.pairs[i], event.pairs[i].isActive)
       }
       currentPairs = currentPairs.filter(pair => pair.isActive)
@@ -254,39 +236,10 @@ export default function MatterPhysics (props) {
       // Body.setVelocity(boxA, { x: 0, y: -2 })
       // console.log(ongoingTouches)
 
-      bodyConstellations.forEach(c => {
-        c.bodies.forEach(body => {
-          if (body.plugin.wrap) {
-            console.log(body, body.bounds, min, max)
-            const objectBounds = body.bounds
-            let x = null
-            let y = null
-
-            // if (typeof min.x !== 'undefined' && typeof bounds.max.x !== 'undefined') {
-            if (objectBounds.min.x > max.x) {
-              x = min.x - objectBounds.max.x
-            } else if (objectBounds.max.x < min.x) {
-              x = max.x - objectBounds.min.x
-            }
-            // }
-
-            // if (typeof min.y !== 'undefined' && typeof max.y !== 'undefined') {
-            if (objectBounds.min.y > max.y) {
-              y = min.y - objectBounds.max.y
-            } else if (objectBounds.max.y < min.y) {
-              y = max.y - objectBounds.min.y
-            }
-            // }
-
-            if (x !== null || y !== null) {
-              Body.translate(body, {
-                x: x || 0,
-                y: y || 0
-              })
-            }
-            // console.log('should wrap', body)
-            // if*
-          }
+      props.constellations.forEach(c => {
+        c.bodyObjects.forEach(body => {
+          wrapToBounds(body, { min, max })
+          updateSignals(body, c.setStore)
         })
       })
       window.requestAnimationFrame(run)

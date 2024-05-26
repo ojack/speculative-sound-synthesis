@@ -4,6 +4,7 @@ import FaustEditor from './FaustEditor.jsx'
 import MatterPhysics from './MatterPhysics.jsx'
 import { createStore } from 'solid-js/store'
 import { fantasyRelationships, fantasyShapes } from './physics/fantasyShapes.js'
+import { createConstellationStore } from './stores/constellation.js'
 import world from './phantasy-worlds/basic.js'
 import Toolbar from './Toolbar.jsx'
 
@@ -11,6 +12,7 @@ function App () {
   const shapeTypes = Object.keys(fantasyShapes)
   const relationshipTypes = Object.keys(fantasyRelationships)
 
+  // older
   const relationships = {}
   relationshipTypes.forEach((type) => {
     relationships[type] = Object.assign({}, {
@@ -38,7 +40,27 @@ function App () {
     showLanding: false
   })
 
-  const [constellationStore, setConstellationStore] = createStore({ constellations: world.constellations })
+  // world.constellations.forEach(constellation => {
+  //   constellation.bodies.forEach(body => {
+  //     body.params = {
+  //       angle: { val: 0, min: 0, max: Math.PI * 2 },
+  //       velocity: {
+  //         x: { val: 0, min: -10, max: 10 },
+  //         y: { val: 0, min: -10, max: 10 }
+  //       },
+  //       position: {
+  //         x: { val: 0, min: 0, max: 1000 },
+  //         y: { val: 0, min: 0, max: 10000 }
+  //       }
+  //     }
+  //   })
+  // })
+
+  // const [constellationStore, setConstellationStore] = createStore({ constellations: world.constellations })
+
+  const constellations = world.constellations.map((c) => createConstellationStore(c))
+
+  console.log('CONSTELLATIONS', constellations)
 
   const drawingSettings = Object.assign({}, {
     width: Math.min(window.innerWidth, 600),
@@ -73,12 +95,15 @@ function App () {
       <div class="w-full font-mono flex" style={{ 'background-color': drawingStore.backgroundColor, color: drawingStore.color }}>
         {/* <DrawingCanvas params={store.params} width={600} height={600} setStore={setStore} /> */}
         <div class="felx flex-col">
-        <MatterPhysics {...drawingStore} {...constellationStore} {...store} updateRelationship={updateRelationship} setStore={setStore} />
+        <MatterPhysics {...drawingStore} {...store} updateRelationship={updateRelationship} setStore={setStore} constellations={constellations} />
         <Toolbar {...drawingStore} setDrawingStore={setDrawingStore} />
         </div>
-        <div class="" style={{ width: '1000px' }}>
-          <For each={store.relationshipTypes}>{(type, i) =>
-          <FaustEditor {...drawingStore} {...constellationStore} params={store.relationships[type].params} setStore={setStore} dsp={store.relationships[type].dsp}/>
+        <div class="overflow-x-scroll" style={{ }}>
+          {/* <For each={store.relationshipTypes}>{(type, i) =>
+          <FaustEditor {...drawingStore} params={store.relationships[type].params} setStore={setStore} dsp={store.relationships[type].dsp} />
+        }</For> */}
+         <For each={constellations}>{(constellation, i) =>
+          <FaustEditor {...drawingStore} params={[]} setStore={setStore} dsp={constellation.store.dsp} constellation={constellation}/>
         }</For>
           {/* <FaustEditor params={store.params} setStore={setStore} dsp={marimba}/> */}
           {/* <FaustEditor params={store.params} setStore={setStore} dsp={feedbackToy}/> */}

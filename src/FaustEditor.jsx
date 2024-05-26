@@ -1,6 +1,7 @@
 import './../faust-web-component'
 import { createStore } from 'solid-js/store'
 import { onMount, createEffect, For } from 'solid-js'
+import { Entries } from '@solid-primitives/keyed'
 
 const faustCode = `
   import("stdfaust.lib");
@@ -86,21 +87,52 @@ function Faust (props) {
     console.log('faust sliders are', faustParams.sliders)
     faustParams.sliders.forEach((slider, i) => {
       // if (i < props.paramCount) {
-      if (slider.draw !== null) {
-        const { address, max, min, draw } = slider
-
-        // @todo: how to change params when first loaded?
+      const drawParams = props.constellation.store.signalArray.filter((p) => p.faustParam === slider.label)
+      //  console.log('DRAW PARAMS', drawParams)
+      if (drawParams.length > 0) {
+        const { address, max, min } = slider
+        const { signalPath } = drawParams[0]
+        // console.log('SIGNAL PATH', signalPath)
         createEffect(() => {
           // @todo: ???use create memo to calculate values
           // @todo: how to check whether parameter exists??
-
-          const param = props.params[draw]
-          const newVal = map(param.val, param.min, param.max, min, max)
+        //  console.log(props.constellation.store.signals[signalPath])
+          const param = props.constellation.store.signals[signalPath]
+          //  const
+          const newVal = map(param, 0, 500, min, max)
+          //  console.log(newVal)
           faustEl.node?.setParamValue(address, newVal)
         })
       }
+      // if (slider.draw !== null) {
+      //   const { address, max, min, draw } = slider
+
+      //   // @todo: how to change params when first loaded?
+      //   createEffect(() => {
+      //     // @todo: ???use create memo to calculate values
+      //     // @todo: how to check whether parameter exists??
+
+      //     const param = props.params[draw]
+      //     const newVal = map(param.val, param.min, param.max, min, max)
+      //     faustEl.node?.setParamValue(address, newVal)
+      //   })
+      // }
     })
   })
+
+  // createEffect(() => {
+  //   console.log('BODY', props.constellation.store.bodies[0].position.x)
+  //   // console.log('BODY', props.constellation.bodies[1].position.x)
+  //   // console.log('BODY', props.constellation.bodies[2].position.x)
+
+  //   console.log('BODY', props.constellation.bodies[0].angle)
+  // })
+
+  // console.log('EDITOR SIGNALS', props.constellation.store.signals)
+
+  // createEffect(() => {
+  //   console.log(' update', props.constellation.store.signals['red-circle.position.x'])
+  // })
 
   onMount(() => {
     // console.log('loaded faustEl', faustEl)
@@ -144,11 +176,13 @@ function Faust (props) {
   })
   return (
         <div>
-          <div class="flex">
-            <For each={faustParams.sliders}>{(param, i) =>
-              <div class="p-1 border text-xs" style={{ 'border-color': props.color }}>{param.label}:{param.draw} </div>
+          <div class ="flex flex-wrap">
+          <For each={props.constellation.store.signalArray}>{(param, i) =>
+              <div class="p-1 border text-xs" style={{ 'border-color': props.color }}>{param.faustParam}:{param.signalPath}:{props.constellation.store.signals[param.signalPath]} </div>
             }</For>
-          </div>
+
+ </div>
+
         <faust-editor ref={faustEl} style={{ '--main-bg-color': props.backgroundColor, '--main-color': props.color }}>
       {props.dsp}
         </faust-editor>
