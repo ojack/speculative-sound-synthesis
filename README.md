@@ -1,4 +1,22 @@
-# drawbble
+# ~ pink ~ plank plunk
+
+## running
+1. Clone the repo (make sure to recurse submodules)
+```shell
+git clone --recurse-submodules git@github.com:ojack/speculative-sound-synthesis.git
+```
+
+2. install libraries
+```shell
+npm install
+```
+
+3. run 
+```shell
+npm run dev
+```
+
+## (deprecated)
 
 ## available drawing parameters
 - x: x position of initial touch point
