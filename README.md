@@ -1,4 +1,4 @@
-# ~ pink ~ plank plunk
+# ~plink ~plank ~plunk
 
 ## running
 1. Clone the repo (make sure to recurse submodules)
@@ -15,6 +15,9 @@ npm install
 ```shell
 npm run dev
 ```
+
+## Editing worlds 
+The current world configuration is contained in `/src/phantasy-world/basic.js`. Edit this file to change the shapes that appear on the screen/
 
 ## (deprecated)
 
