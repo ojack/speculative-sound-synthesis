@@ -7,6 +7,7 @@ import { fantasyRelationships, fantasyShapes } from './physics/fantasyShapes.js'
 import { createConstellationStore } from './stores/constellation.js'
 import world from './phantasy-worlds/basic.js'
 import Toolbar from './Toolbar.jsx'
+import BodyDetails from './BodyDetails.jsx'
 
 function App () {
   const shapeTypes = Object.keys(fantasyShapes)
@@ -37,7 +38,8 @@ function App () {
     shapes: fantasyShapes,
     relationshipTypes,
     relationships,
-    showLanding: false
+    showLanding: false,
+    selectedBody: null
   })
 
   // world.constellations.forEach(constellation => {
@@ -59,8 +61,6 @@ function App () {
   // const [constellationStore, setConstellationStore] = createStore({ constellations: world.constellations })
 
   const constellations = world.constellations.map((c) => createConstellationStore(c))
-
-  console.log('CONSTELLATIONS', constellations)
 
   const drawingSettings = Object.assign({}, {
     width: Math.min(window.innerWidth, 600),
@@ -107,8 +107,15 @@ function App () {
         }</For>
           {/* <FaustEditor params={store.params} setStore={setStore} dsp={marimba}/> */}
           {/* <FaustEditor params={store.params} setStore={setStore} dsp={feedbackToy}/> */}
-
+          <Show
+  when={store.selectedBody !== null}
+  fallback={<></>}
+>
+  <div>{store.selectedBody?.label} hellooo </div>
+  <BodyDetails {...store.selectedBody} />
+</Show>
         </div>
+
       </div>
     </Show>
     </>

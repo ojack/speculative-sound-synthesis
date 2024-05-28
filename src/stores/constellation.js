@@ -1,6 +1,6 @@
-import { Bodies } from 'matter-js'
-import { createEffect } from 'solid-js'
-import { createStore } from 'solid-js/store'
+import { Bodies, Body } from 'matter-js'
+import { createEffect, createSignal } from 'solid-js'
+import { createStore, reconcile } from 'solid-js/store'
 // using existing classes as stores: https://github.com/solidjs/solid/discussions/1474
 
 // eaxh constellation has its own store which is used in both dsp code and physics
@@ -30,9 +30,15 @@ function createBody (options, paths) {
     // return Bodies.circle(100, 100, 20 + Math.random() * 20, options)
     // const { type, ...shapeOptions } = options // removes type parameter
     // const { label, angle, friction, frictionAir, frictionStatic, isSensor, restitution, render, type, x, y, width, height } = options
-    body = Bodies[shape](100, 100, 20 + Math.random() * 20, options)
+    body = Bodies[shape](x, y, width, options)
   } else {
     body = Bodies[shape](x, y, width, height, options)
+  }
+
+  if (options.velocity) {
+    const velocity = Object.assign({}, { x: 0, y: 0 }, options.velocity)
+    console.log('setting veloctiry', velocity)
+    Body.setVelocity(body, velocity)
   }
   //   const [positionStore] = createStore(body.position)
   //   body.position = positionStore
@@ -64,30 +70,55 @@ export const createConstellationStore = (_constellation) => {
   console.log('paths!', paths)
   const bodyObjects = _constellation.bodies.map(bodyParams => createBody(Object.assign({}, bodyDefaults, bodyParams), paths.filter(b => b.path[0] === bodyParams.label)))
   const signals = {}
-
   // tracked properties
   const signalArray = Object.entries(signalMap).map(([faustParam, signalPath], i) => ({ faustParam, signalPath }))
+  //   console.log('SIGNALS ARE', signals)
 
-  console.log('SIGNALS ARE', signals)
-  // return Object.assign({}, body, { params: {
-  //   angle: { val: 0, min: 0, max: Math.PI * 2 },
-  //   velocity: {
-  //     x: { val: 0, min: -10, max: 10 },
-  //     y: { val: 0, min: -10, max: 10 }
-  //   },
-  //   position: {
-  //     x: { val: 0, min: 0, max: 1000 },
-  //     y: { val: 0, min: 0, max: 10000 }
-  //   }
-  // }}
-
-  //
   const constellation = { label, dsp, bodies, signals, signalArray }
   const [store, setStore] = createStore(constellation)
+  const [bodyStore, setBodyStoreOrigin] = createStore(bodies)
+  // trigger an update when anything is changed
+  // https://github.com/solidjs/solid/discussions/829
+  const [triggerUpdate, setTriggerUpdating] = createSignal(1)
+  const setBodyStore = (...args) => {
+    setTriggerUpdating((v) => v + 1)
+    console.log('updating', args)
+    setBodyStoreOrigin(...args)
+  }
 
-  //   createEffect(() => {
-  //     store.bodu
-  //   })
+  const renderProps = ['fillStyle', 'fill', 'lineWidth', 'opacity', 'visible', 'strokeStyle']
+  createEffect(() => {
+    console.log('body length has changed', bodyStore.length)
+    bodyStore.forEach((body, i) => {
+      createEffect(() => {
+        // Object.keys(body)
+        console.log('rendering has changed', Object.keys(body.render))
+        // console.log('friction has changed', body.friction)
+        console.log('width has changed', body.width, i, bodyObjects[i])
+        // bodyObjects[i].width = body.width
+        Body.set(bodyObjects[i], { width: body.width })
+        // Body.set(bodyObjects[i], { render: { fillStyle: 'orange' } })
+      })
+    //   renderProps.forEach(prop => {
+    //     createEffect(() => {
+    //       bodyObjects[i].render[prop] = body.render[prop]
+    //     })
+    //   })
+    })
+  })
+
+  //    createEffect(() => {
+  //        bodyStore.forEach((body, i) => {
+  //             createEffect(() => {
+  //                 console.log('body has changed', body)
+  //             })
+  //         })
+  //       })
+  //       console.log('updating', args)
+
+  window.setBodyStore = setBodyStore
+  window.reconcile = reconcile
+  // reconcile: https://github.com/solidjs/solid/blob/b5a379f889e8f7a208bc223b908a0fdcf353d944/packages/solid/store/src/server.ts#L112
 
   console.log('STORE IS', store)
   return {

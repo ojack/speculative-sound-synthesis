@@ -178,7 +178,9 @@ export default function MatterPhysics (props) {
     Events.on(mouseConstraint, 'mousedown', (e) => {
       // console.log('mousedown', mouseConstraint, mouseConstraint.constraint.bodyB)
       // If not grabbing an existing object, add a new object
-      console.log('BRUSH', props.currentBrush)
+      // if (mouseConstraint.constraint.bodyB !== null)props.setStore('selectedBody', mouseConstraint.constraint.bodyB)
+
+      //   console.log('BRUSH', props.currentBrush)
       if (props.currentBrush !== 'eraser') {
         if (mouseConstraint.constraint.bodyB === null) {
           // console.log('adding', mouse)
@@ -194,6 +196,8 @@ export default function MatterPhysics (props) {
           Composite.add(engine.world, shape)
           // console.log('touches', mouse.touches)
           // if (mouse.touches.length > 0) render.options.background = 'blue'
+        } else {
+          console.log('body is', mouseConstraint.constraint.bodyB)
         }
       } else {
         if (mouseConstraint.constraint.bodyB !== null) {
@@ -202,14 +206,14 @@ export default function MatterPhysics (props) {
           Composite.remove(engine.world, mouseConstraint.constraint.bodyB)
         }
       }
-    })
+      // })
 
     // Events.on(mouseConstraint, 'mousemove', (e) => {
     //   // console.log('mousedown', mouseConstraint, mouseConstraint.constraint.bodyB)
     //   // if (shape !== null && mouse.touches.length > 0) {
     //   //   console.log('touches', mouse.touches)
     //   // }
-    // })
+    })
 
     Events.on(mouseConstraint, 'mouseup', (e) => {
       shape = null
