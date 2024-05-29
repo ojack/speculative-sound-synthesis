@@ -11,7 +11,19 @@ git clone --recurse-submodules git@github.com:ojack/speculative-sound-synthesis.
 npm install
 ```
 
-3. run 
+3. build local copy of faust-web-component
+```shell
+# change fo component directory
+cd faust-web-component
+# install dependencies
+npm install
+
+# build
+npm run build
+```
+
+4. run app in dev mode
+return to `speculative-sound-synthesis` root directory
 ```shell
 npm run dev
 ```
